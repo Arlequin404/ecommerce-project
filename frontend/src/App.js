@@ -1,8 +1,19 @@
 import React from "react";
-import LoginPage from "./pages/LoginPage"; // Asegúrate de que LoginPage esté correctamente configurado
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import LoginPage from "./pages/LoginPage";
+import UserProfilePage from "./pages/UserProfilePage";
+import EditUserProfilePage from "./pages/EditUserProfilePage";
 
 const App = () => {
-    return <LoginPage />;
+    return (
+        <Router>
+            <Routes>
+                <Route path="/" element={<LoginPage />} />
+                <Route path="/profile" element={<UserProfilePage />} />
+                <Route path="/profile/edit" element={<EditUserProfilePage />} />
+            </Routes>
+        </Router>
+    );
 };
 
 export default App;

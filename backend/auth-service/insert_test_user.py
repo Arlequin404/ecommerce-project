@@ -1,25 +1,23 @@
+from src.models.user_model import User, db
 from werkzeug.security import generate_password_hash
-import psycopg2
+from src.app import create_app
 
-# Conexión a la base de datos
-conn = psycopg2.connect(
-    dbname="ecommerce",
-    user="postgres",
-    password="12345",
-    host="localhost"
-)
-cursor = conn.cursor()
+# Crear la aplicación Flask
+app = create_app()
 
-# Insertar un usuario de prueba
-hashed_password = generate_password_hash("test_password")
-cursor.execute(
-    "INSERT INTO users (username, email, password) VALUES (%s, %s, %s)",
-    ("test_user", "test_user@example.com", hashed_password)
-)
+# Contexto de la aplicación para interactuar con la base de datos
+with app.app_context():
+    # Crear un nuevo usuario
+    user = User(
+        username="Sebas",
+        email="sebasgm78@gmail.com",
+        password=generate_password_hash("sebas123"),  # Contraseña hasheada
+        name="EsWonder",
+        phone="1234567890"
+    )
 
-# Confirmar cambios y cerrar la conexión
-conn.commit()
-cursor.close()
-conn.close()
+    # Agregar el usuario a la base de datos
+    db.session.add(user)
+    db.session.commit()
 
-print("Usuario de prueba insertado correctamente.")
+    print("Usuario de prueba creado con éxito.")

@@ -1,7 +1,8 @@
 from flask import Flask
 from flask_jwt_extended import JWTManager
-from models.user_model import db
+from src.models.user_model import db
 from routes.auth_routes import auth_bp
+from routes.user_routes import user_bp  # Importamos el blueprint de las rutas de usuario
 
 def create_app():
     app = Flask(__name__)
@@ -18,10 +19,11 @@ def create_app():
     # Rutas disponibles
     @app.route('/')
     def index():
-        return {"message": "Welcome to the Auth Service"}
+        return {"message": "Welcome to the Auth and User Profile Service"}
 
-    # Registrar el blueprint para las rutas de autenticación
-    app.register_blueprint(auth_bp, url_prefix='/auth')
+    # Registrar blueprints
+    app.register_blueprint(auth_bp, url_prefix='/auth')  # Blueprint de autenticación
+    app.register_blueprint(user_bp, url_prefix='/user')  # Blueprint de perfil de usuario
 
     return app
 
