@@ -1,0 +1,24 @@
+# Entorno virtual
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Archivos de configuración y dependencias
+.env
+.env.local
+instance/
+config/database.py
+
+# Logs y caché
+logs/
+*.log
+*.sqlite
+*.db
+.DS_Store
+
+# Archivos de compilación y dependencias
+*.egg-info/
+*.dist-info/
+build/
+dist/
