@@ -2,8 +2,12 @@ from flask import Blueprint, request, jsonify
 from config.database import get_db_connection
 import bcrypt
 import psycopg2
+import requests  # 📌 Importar requests para sincronización automática
 
 auth_blueprint = Blueprint("auth", __name__)
+
+# URL del microservicio de login
+LOGIN_SERVICE_URL = "http://localhost:5001/auth/sync-user"
 
 @auth_blueprint.route("/register", methods=["POST"])
 def register_user():
@@ -47,7 +51,29 @@ def register_user():
         cursor.close()
         conn.close()
 
-        return jsonify({"message": "✅ Usuario registrado exitosamente", "user_id": user_id}), 201
+        # 📌 Sincronizar usuario con login-user
+        sync_payload = {
+            "user_id": user_id,
+            "email": email,
+            "password": hashed_password,  # Se envía encriptada
+            "first_name": first_name,
+            "last_name": last_name,
+            "phone": phone,
+            "address": address,
+            "city": city,
+            "country": country,
+            "postal_code": postal_code,
+            "role": role
+        }
+
+        try:
+            response = requests.post(LOGIN_SERVICE_URL, json=sync_payload, timeout=5)
+            if response.status_code != 201:
+                return jsonify({"message": "⚠️ Usuario registrado pero no sincronizado con login", "error": response.json()}), 202
+        except requests.exceptions.RequestException as e:
+            return jsonify({"message": "⚠️ Usuario registrado pero no sincronizado con login", "error": str(e)}), 202
+
+        return jsonify({"message": "✅ Usuario registrado y sincronizado", "user_id": user_id}), 201
 
     except psycopg2.Error as e:
         return jsonify({"message": "❌ Error en la base de datos", "error": str(e)}), 500
