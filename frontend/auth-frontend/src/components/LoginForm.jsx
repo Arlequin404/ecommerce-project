@@ -1,13 +1,25 @@
-import React from "react";
-import RegisterForm from "./components/RegisterForm";
+import React, { useState } from "react";
 
-function App() {
+function LoginForm() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("Enviando credenciales:", { email, password });
+  };
+
   return (
-    <div>
-      <h1>Bienvenido a la App</h1>
-      <RegisterForm />
-    </div>
+    <form onSubmit={handleSubmit}>
+      <label>Email:</label>
+      <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+      
+      <label>Contraseña:</label>
+      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+      
+      <button type="submit">Ingresar</button>
+    </form>
   );
 }
 
-export default App;
+export default LoginForm;

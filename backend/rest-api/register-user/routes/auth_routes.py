@@ -9,6 +9,7 @@ auth_blueprint = Blueprint("auth", __name__)
 # URL del microservicio de login
 LOGIN_SERVICE_URL = "http://localhost:5001/auth/sync-user"
 
+# 🔹 Ruta para registrar un usuario y sincronizarlo con login-user
 @auth_blueprint.route("/register", methods=["POST"])
 def register_user():
     try:
@@ -79,3 +80,42 @@ def register_user():
         return jsonify({"message": "❌ Error en la base de datos", "error": str(e)}), 500
     except Exception as e:
         return jsonify({"message": "❌ Error en el servidor", "error": str(e)}), 500
+
+
+# 🔹 **Nueva ruta para obtener todos los usuarios** (Para sincronización en login-user)
+@auth_blueprint.route("/get-all-users", methods=["GET"])
+def get_all_users():
+    """ Obtener todos los usuarios registrados para sincronización """
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Obtener todos los usuarios de la base de datos
+        cursor.execute("SELECT id, email, password, first_name, last_name, phone, address, city, country, postal_code, role FROM users;")
+        users = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        # Convertir los datos a formato JSON
+        user_list = [
+            {
+                "user_id": user[0],
+                "email": user[1],
+                "password": user[2],  # La contraseña ya está hasheada
+                "first_name": user[3],
+                "last_name": user[4],
+                "phone": user[5],
+                "address": user[6],
+                "city": user[7],
+                "country": user[8],
+                "postal_code": user[9],
+                "role": user[10]
+            }
+            for user in users
+        ]
+
+        return jsonify({"users": user_list}), 200
+
+    except Exception as e:
+        return jsonify({"message": "❌ Error al obtener usuarios", "error": str(e)}), 500
