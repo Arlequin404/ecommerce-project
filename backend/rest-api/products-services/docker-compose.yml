@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb_container
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: ecommerce
+    volumes:
+      - mongodb_data:/data/db
+
+  create-product-service:
+    build: ./create-product-service
+    container_name: create-product-service
+    restart: always
+    depends_on:
+      - mongodb
+    environment:
+      MONGO_URI: mongodb://root:example@mongodb:27017/ecommerce
+    ports:
+      - "5001:5001"
+
+  get-product-details-service:
+    build: ./get-product-details-service
+    container_name: get-product-details-service
+    restart: always
+    depends_on:
+      - mongodb
+    environment:
+      MONGO_URI: mongodb://root:example@mongodb:27017/ecommerce
+    ports:
+      - "5002:5002"
+
+  update-product-service:
+    build: ./update-product-service
+    container_name: update-product-service
+    restart: always
+    depends_on:
+      - mongodb
+    environment:
+      MONGO_URI: mongodb://root:example@mongodb:27017/ecommerce
+    ports:
+      - "5003:5003"
+
+volumes:
+  mongodb_data:
+    driver: local
