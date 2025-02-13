@@ -13,6 +13,7 @@ services:
       MONGO_INITDB_DATABASE: ecommerce
     volumes:
       - mongodb_data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro  # Agregar script de inicialización
 
   create-product-service:
     build: ./create-product-service
@@ -21,7 +22,7 @@ services:
     depends_on:
       - mongodb
     environment:
-      MONGO_URI: mongodb://root:example@mongodb:27017/ecommerce
+      MONGO_URI: mongodb://root:example@mongodb:27017/ecommerce?authSource=admin
     ports:
       - "5001:5001"
 
@@ -32,7 +33,7 @@ services:
     depends_on:
       - mongodb
     environment:
-      MONGO_URI: mongodb://root:example@mongodb:27017/ecommerce
+      MONGO_URI: mongodb://root:example@mongodb:27017/ecommerce?authSource=admin
     ports:
       - "5002:5002"
 
@@ -43,7 +44,7 @@ services:
     depends_on:
       - mongodb
     environment:
-      MONGO_URI: mongodb://root:example@mongodb:27017/ecommerce
+      MONGO_URI: mongodb://root:example@mongodb:27017/ecommerce?authSource=admin
     ports:
       - "5003:5003"
 
